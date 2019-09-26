@@ -25,11 +25,11 @@ public:
     //! Distance to landmark 2
     static constexpr size_t D2 = 1;
     
-    T d1()       const { return (*this)[ D1 ]; }
-    T d2()       const { return (*this)[ D2 ]; }
-    
-    T& d1()      { return (*this)[ D1 ]; }
-    T& d2()      { return (*this)[ D2 ]; }
+    DEFINE_CONST_GET(T, d1, D1);
+    DEFINE_CONST_GET(T, d2, D2);
+
+    DEFINE_REF_GET(T, d1, D1);
+    DEFINE_REF_GET(T, d2, D2);
 };
 
 /**
@@ -91,7 +91,7 @@ public:
         
         // Robot position as (x,y)-vector
         // This uses the Eigen template method to get the first 2 elements of the vector
-        Kalman::Vector<T, 2> position = x.template head<2>();
+        Kalman::Vector<T, 2> position = x.get().template head<2>();
         
         // Distance of robot to landmark 1
         Kalman::Vector<T, 2> delta1 = position - landmark1;
@@ -135,7 +135,7 @@ protected:
         
         // Robot position as (x,y)-vector
         // This uses the Eigen template method to get the first 2 elements of the vector
-        Kalman::Vector<T, 2> position = x.template head<2>();
+        Kalman::Vector<T, 2> position = x.get().template head<2>();
         
         // Distance of robot to landmark 1
         Kalman::Vector<T, 2> delta1 = position - landmark1;

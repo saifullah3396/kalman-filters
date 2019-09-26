@@ -29,13 +29,13 @@ public:
     //! Orientation
     static constexpr size_t THETA = 2;
     
-    T x()       const { return (*this)[ X ]; }
-    T y()       const { return (*this)[ Y ]; }
-    T theta()   const { return (*this)[ THETA ]; }
-    
-    T& x()      { return (*this)[ X ]; }
-    T& y()      { return (*this)[ Y ]; }
-    T& theta()  { return (*this)[ THETA ]; }
+    DEFINE_CONST_GET(T, x, X);
+    DEFINE_CONST_GET(T, y, Y);
+    DEFINE_CONST_GET(T, theta, THETA);
+
+    DEFINE_REF_GET(T, x, X);
+    DEFINE_REF_GET(T, y, Y);
+    DEFINE_REF_GET(T, theta, THETA);
 };
 
 /**
@@ -58,11 +58,11 @@ public:
     //! Angular Rate (Orientation-change)
     static constexpr size_t DTHETA = 1;
     
-    T v()       const { return (*this)[ V ]; }
-    T dtheta()  const { return (*this)[ DTHETA ]; }
-    
-    T& v()      { return (*this)[ V ]; }
-    T& dtheta() { return (*this)[ DTHETA ]; }
+    DEFINE_CONST_GET(T, v, V);
+    DEFINE_CONST_GET(T, dtheta, DTHETA);
+
+    DEFINE_REF_GET(T, v, V);
+    DEFINE_REF_GET(T, dtheta, DTHETA);
 };
 
 /**

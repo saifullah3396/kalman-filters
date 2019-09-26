@@ -22,8 +22,8 @@ public:
     //! Orientation
     static constexpr size_t THETA = 0;
     
-    T theta()  const { return (*this)[ THETA ]; }
-    T& theta() { return (*this)[ THETA ]; }
+    DEFINE_CONST_GET(T, theta, THETA);
+    DEFINE_REF_GET(T, theta, THETA);
 };
 
 /**
