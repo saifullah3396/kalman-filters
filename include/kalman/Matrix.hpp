@@ -26,7 +26,12 @@
 
 #include <Eigen/Dense>
 
+#define DEFINE_CONST_GET(T, var, VAR_INDEX) T var() const { return this->internal_[VAR_INDEX]; }
+#define DEFINE_REF_GET(T, var, VAR_INDEX) T& var() { return this->internal_[VAR_INDEX]; }
+
 #define KALMAN_VECTOR(NAME, T, N) \
+    private: \
+        Kalman::Vector<T, N> internal_; \
     public: \
         typedef Eigen::VectorBlock<Kalman::Vector<T, N>> SegmentReturnType; \
         typedef const Eigen::VectorBlock<const Kalman::Vector<T, N>> ConstSegmentReturnType; \
@@ -39,9 +44,7 @@
         }; \
         NAME(void) {} \
         NAME(const Kalman::Vector<T, N>& internal) : internal_(internal) {} \
-        Kalman::Vector<T, N>& get() { return internal_; } \
-    private: \
-        Kalman::Vector<T, N> internal_;
+        Kalman::Vector<T, N>& get() { return internal_; }
 
 namespace Kalman {
     const int Dynamic = Eigen::Dynamic;
