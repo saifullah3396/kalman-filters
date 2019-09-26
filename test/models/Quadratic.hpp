@@ -11,6 +11,13 @@ namespace Test
 namespace Models
 {
 
+template<typename T, size_t Rows>
+class DummyState : public Kalman::Vector<T, Rows>
+{
+public:
+    KALMAN_VECTOR(DummyState, T, Rows)
+};
+
 template<class StateType>
 class QuadraticSystemModel : public SystemModel<StateType, StateType>
 {
@@ -22,7 +29,7 @@ public:
     State f(const State& x, const Control& u) const
     {
         // return x.^2 + u
-        return x.cwiseProduct(x) + u;
+        return State(x.get().cwiseProduct(x.get()) + u.get());
     }
 };
 
@@ -40,7 +47,7 @@ public:
     Measurement h(const State& x) const
     {
         // return x.^2
-        return x.cwiseProduct(x).template head<Measurement::RowsAtCompileTime>();
+        return Measurement(x.get().cwiseProduct(x.get()).template head<Measurement::RowsAtCompileTime>());
     }
 };
 

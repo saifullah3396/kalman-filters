@@ -191,7 +191,7 @@ namespace Kalman {
         {
             for( int i = 0; i < SigmaPointCount; ++i )
             {
-                sigmaStatePoints.col(i) = s.f( State(sigmaStatePoints.col(i)), u );
+                sigmaStatePoints.col(i) = s.f( State(sigmaStatePoints.col(i)), u ).get();
             }
         }
         
@@ -208,7 +208,7 @@ namespace Kalman {
         {
             for( int i = 0; i < SigmaPointCount; ++i )
             {
-                sigmaMeasurementPoints.col(i) = m.h( State(sigmaStatePoints.col(i)) );
+                sigmaMeasurementPoints.col(i) = m.h( State(sigmaStatePoints.col(i)) ).get();
             }
         }
         

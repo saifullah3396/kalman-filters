@@ -51,8 +51,8 @@ TEST(UnscentedKalmanFilterBase, computeSigmaWeights) {
 TEST(UnscentedKalmanFilterBase, computeSigmaPointTransition) {
     T alpha = 1, beta = 2, kappa = 1;
     
-    auto ukf = ConcreteUKF<Vector<T, 3>>(alpha,beta,kappa);
-    auto model = Kalman::Test::Models::QuadraticSystemModel<Vector<T, 3>>();
+    auto ukf = ConcreteUKF<Kalman::Test::Models::DummyState<T, 3>>(alpha,beta,kappa);
+    auto model = Kalman::Test::Models::QuadraticSystemModel<Kalman::Test::Models::DummyState<T, 3>>();
     
     // Init variables
     ukf.sigmaStatePoints <<
@@ -61,13 +61,13 @@ TEST(UnscentedKalmanFilterBase, computeSigmaPointTransition) {
         15, 16, 17, 18, 19, 20, 21;
     
     // Control vector
-    Vector<T,3> u;
-    u << 1, 2, 3;
+    Kalman::Test::Models::DummyState<T, 3> u;
+    u.get() << 1, 2, 3;
     
     // Compute reference result
-    Matrix<T,3,7> ref = (ukf.sigmaStatePoints.cwiseProduct(ukf.sigmaStatePoints).colwise() + u).eval();
+    Matrix<T,3,7> ref = (ukf.sigmaStatePoints.cwiseProduct(ukf.sigmaStatePoints).colwise() + u.get()).eval();
     
-    // Compute transition
+    // Compute transition 
     ukf.computeSigmaPointTransition(model, u);
     
     ASSERT_MATRIX_NEAR(ref, ukf.sigmaStatePoints, 1e-10);
@@ -76,8 +76,8 @@ TEST(UnscentedKalmanFilterBase, computeSigmaPointTransition) {
 TEST(UnscentedKalmanFilterBase, computeSigmaPointMeasurements) {
     T alpha = 1, beta = 2, kappa = 1;
     
-    auto ukf = ConcreteUKF<Vector<T, 3>>(alpha,beta,kappa);
-    auto model = Kalman::Test::Models::QuadraticMeasurementModel<Vector<T, 3>, Vector<T, 2>>();
+    auto ukf = ConcreteUKF<Kalman::Test::Models::DummyState<T, 3>>(alpha,beta,kappa);
+    auto model = Kalman::Test::Models::QuadraticMeasurementModel<Kalman::Test::Models::DummyState<T, 3>, Kalman::Test::Models::DummyState<T, 2>>();
     
     // Init variables
     ukf.sigmaStatePoints <<
@@ -89,7 +89,7 @@ TEST(UnscentedKalmanFilterBase, computeSigmaPointMeasurements) {
     Matrix<T,2,7> tmp = ukf.sigmaStatePoints.template topRows<2>();
     Matrix<T,2,7> ref = tmp.cwiseProduct(tmp).eval();
     
-    typename ConcreteUKF<Vector<T,3>>::template SigmaPoints<Vector<T,2>> points;
+    typename ConcreteUKF<Kalman::Test::Models::DummyState<T, 3>>::template SigmaPoints<Kalman::Test::Models::DummyState<T, 2>> points;
     
     ukf.computeSigmaPointMeasurements(model, points);
     
