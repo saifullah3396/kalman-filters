@@ -26,24 +26,26 @@
 
 #include <Eigen/Dense>
 
-#define KALMAN_VECTOR(NAME, T, N)                                                       \
-    typedef Kalman::Vector<T, N> Base;                                                  \
-    using typename Base::Scalar;                                                        \
-    using Base::RowsAtCompileTime;                                                      \
-    using Base::ColsAtCompileTime;                                                      \
-    using Base::SizeAtCompileTime;                                                      \
-                                                                                        \
-    NAME(void) : Kalman::Vector<T, N>() {}                                              \
-                                                                                        \
-    template<typename OtherDerived>                                                     \
-    NAME(const Eigen::MatrixBase<OtherDerived>& other) : Kalman::Vector<T, N>(other) {} \
-                                                                                        \
-    template<typename OtherDerived>                                                     \
-    NAME& operator= (const Eigen::MatrixBase <OtherDerived>& other)                     \
-    {                                                                                   \
-        this->Base::operator=(other);                                                   \
-        return *this;                                                                   \
-    }
+#define DEFINE_CONST_GET(T, var, VAR_INDEX) T var() const { return this->internal_[VAR_INDEX]; }
+#define DEFINE_REF_GET(T, var, VAR_INDEX) T& var() { return this->internal_[VAR_INDEX]; }
+
+#define KALMAN_VECTOR(NAME, T, N) \
+    private: \
+        Kalman::Vector<T, N> internal_; \
+    public: \
+        typedef Eigen::VectorBlock<Kalman::Vector<T, N>> SegmentReturnType; \
+        typedef const Eigen::VectorBlock<const Kalman::Vector<T, N>> ConstSegmentReturnType; \
+        template<int Size> struct FixedSegmentReturnType { typedef Eigen::VectorBlock<Kalman::Vector<T, N>, Size> Type; }; \
+        template<int Size> struct ConstFixedSegmentReturnType { typedef const Eigen::VectorBlock<const Kalman::Vector<T, N>, Size> Type; }; \
+        typedef typename Kalman::Vector<T, N>::Scalar Scalar; \
+        enum { \
+            RowsAtCompileTime = Kalman::Vector<T, N>::RowsAtCompileTime, \
+            ColsAtCompileTime = Kalman::Vector<T, N>::ColsAtCompileTime \
+        }; \
+        NAME(void) {} \
+        NAME(const Kalman::Vector<T, N>& internal) : internal_(internal) {} \
+        Kalman::Vector<T, N>& get() { return internal_; } \
+        Kalman::Vector<T, N> get() const { return internal_; }
 
 namespace Kalman {
     const int Dynamic = Eigen::Dynamic;
@@ -64,36 +66,7 @@ namespace Kalman {
      * @param N The vector dimension
      */
     template<typename T, int N>
-    class Vector : public Matrix<T, N, 1>
-    {
-    public:
-        //! Matrix base type
-        typedef Matrix<T, N, 1> Base;
-
-        using typename Base::Scalar;
-        using Base::RowsAtCompileTime;
-        using Base::ColsAtCompileTime;
-        using Base::SizeAtCompileTime;
-
-        Vector(void) : Matrix<T, N, 1>() {}
-        
-        /**
-         * @brief Copy constructor
-         */
-        template<typename OtherDerived>
-        Vector(const Eigen::MatrixBase<OtherDerived>& other)
-            : Matrix<T, N, 1>(other)
-        { }
-        /**
-         * @brief Copy assignment constructor
-         */
-        template<typename OtherDerived>
-        Vector& operator= (const Eigen::MatrixBase <OtherDerived>& other)
-        {
-            this->Base::operator=(other);
-            return *this;
-        }
-    };
+    using Vector = Matrix<T, N, 1>;
     
     /**
      * @brief Cholesky square root decomposition of a symmetric positive-definite matrix

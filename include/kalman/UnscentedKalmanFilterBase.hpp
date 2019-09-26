@@ -109,7 +109,7 @@ namespace Kalman {
             computeWeights();
             
             // Setup state and covariance
-            x.setZero();
+            x.get().setZero();
         }
 
         /**
@@ -191,7 +191,7 @@ namespace Kalman {
         {
             for( int i = 0; i < SigmaPointCount; ++i )
             {
-                sigmaStatePoints.col(i) = s.f( sigmaStatePoints.col(i), u );
+                sigmaStatePoints.col(i) = s.f( State(sigmaStatePoints.col(i)), u ).get();
             }
         }
         
@@ -208,7 +208,7 @@ namespace Kalman {
         {
             for( int i = 0; i < SigmaPointCount; ++i )
             {
-                sigmaMeasurementPoints.col(i) = m.h( sigmaStatePoints.col(i) );
+                sigmaMeasurementPoints.col(i) = m.h( State(sigmaStatePoints.col(i)) ).get();
             }
         }
         
@@ -224,7 +224,7 @@ namespace Kalman {
         Type computePredictionFromSigmaPoints(const SigmaPoints<Type>& sigmaPoints)
         {
             // Use efficient matrix x vector computation
-            return sigmaPoints * sigmaWeights_m;
+            return Type(sigmaPoints * sigmaWeights_m);
         }
     };
 }

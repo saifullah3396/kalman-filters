@@ -4,28 +4,29 @@
 #define protected public
 
 #include <kalman/UnscentedKalmanFilter.hpp>
+#include "models/Quadratic.hpp"
 
 using namespace Kalman;
 
 typedef float T;
 
 TEST(UnscentedKalmanFilter, init) {
-    auto ukf = UnscentedKalmanFilter<Vector<T, 3>>(1,2,1);
+    auto ukf = UnscentedKalmanFilter<Kalman::Test::Models::DummyState<T, 3>>(1,2,1);
     ASSERT_TRUE(ukf.P.isIdentity()); // P should be identity
 
     // Same as above, but with general matrix type instead of vector
-    auto ukfMatrix = UnscentedKalmanFilter<Matrix<T, 3, 1>>(1,2,1);
+    auto ukfMatrix = UnscentedKalmanFilter<Kalman::Test::Models::DummyState<T, 3>>(1,2,1);
     ASSERT_TRUE(ukfMatrix.P.isIdentity()); // P should be identity
 }
 
 TEST(UnscentedKalmanFilter, computeSigmaPoints) {
     T alpha = 1, beta = 2, kappa = 1;
     
-    auto ukf = UnscentedKalmanFilter<Vector<T, 3>>(alpha,beta,kappa);
+    auto ukf = UnscentedKalmanFilter<Kalman::Test::Models::DummyState<T, 3>>(alpha,beta,kappa);
     
     // Init variables
     ukf.gamma = 2;
-    ukf.x << 1.f, 2.f, 3.f;
+    ukf.x.get() << 1.f, 2.f, 3.f;
     ukf.P.setIdentity();
     
     ASSERT_TRUE(ukf.computeSigmaPoints());
@@ -48,7 +49,7 @@ TEST(UnscentedKalmanFilter, computeSigmaPoints) {
 TEST(UnscentedKalmanFilter, computeCovarianceSquareRootFromSigmaPoints) {
     T alpha = 1, beta = 2, kappa = 1;
     
-    auto ukf = UnscentedKalmanFilter<Vector<T, 3>>(alpha,beta,kappa);
+    auto ukf = UnscentedKalmanFilter<Kalman::Test::Models::DummyState<T, 3>>(alpha,beta,kappa);
     
     Matrix<T, 4, 4> R;
     R <<    1, 0, 0, 0,
@@ -56,8 +57,8 @@ TEST(UnscentedKalmanFilter, computeCovarianceSquareRootFromSigmaPoints) {
             0, 0, 9, 0,
             0, 0, 0, 16;
     
-    Vector<T,4> mean;
-    mean << 2, 3, 4, 5;
+    Kalman::Test::Models::DummyState<T, 4> mean;
+    mean.get() << 2, 3, 4, 5;
     
     ukf.sigmaWeights_c << 3, 5, 5, 5, 5, 5, 5;
     
@@ -85,14 +86,14 @@ TEST(UnscentedKalmanFilter, computeCovarianceSquareRootFromSigmaPoints) {
 TEST(UnscentedKalmanFilter, computeKalmanGain) {
     T alpha = 1, beta = 2, kappa = 1;
     
-    auto ukf = UnscentedKalmanFilter<Vector<T, 3>>(alpha,beta,kappa);
+    auto ukf = UnscentedKalmanFilter<Kalman::Test::Models::DummyState<T, 3>>(alpha,beta,kappa);
     
     ukf.sigmaWeights_c << 3, 5, 5, 5, 5, 5, 5;
     
-    Vector<T,2> mean;
-    mean << 2, 3;
+    Kalman::Test::Models::DummyState<T, 2> mean;
+    mean.get() << 2, 3;
     
-    typename UnscentedKalmanFilter<Vector<T, 3>>::template SigmaPoints<decltype(mean)> sigmaPoints;
+    typename UnscentedKalmanFilter<Kalman::Test::Models::DummyState<T, 3>>::template SigmaPoints<decltype(mean)> sigmaPoints;
     sigmaPoints <<
         1,  2,  1,  1,  0,  1,  1,
         2,  3,  3,  2,  1,  1,  2;
@@ -103,7 +104,7 @@ TEST(UnscentedKalmanFilter, computeKalmanGain) {
         34, 46;
     
     // x and sigmaStatePoints
-    ukf.x << 3, 5, 7;
+    ukf.x.get() << 3, 5, 7;
     ukf.sigmaStatePoints <<
         3,  5, 3, 3, 1, 3, 3,
         5,  7, 7, 5, 3, 3, 5,
@@ -133,7 +134,7 @@ TEST(UnscentedKalmanFilter, computeKalmanGain) {
 TEST(UnscentedKalmanFilter, updateStateCovariance) {
     T alpha = 1, beta = 2, kappa = 1;
     
-    auto ukf = UnscentedKalmanFilter<Vector<T, 3>>(alpha,beta,kappa);
+    auto ukf = UnscentedKalmanFilter<Kalman::Test::Models::DummyState<T, 3>>(alpha,beta,kappa);
     
     Matrix<T,2,2> P_yy;
     P_yy <<

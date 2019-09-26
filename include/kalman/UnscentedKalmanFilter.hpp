@@ -168,7 +168,7 @@ namespace Kalman {
             computeKalmanGain(y, sigmaMeasurementPoints, P_yy, K);
             
             // Update state
-            x += K * ( z - y );
+            x.get() += K * ( z.get() - y.get() );
             
             // Update state covariance
             updateStateCovariance<Measurement>(K, P_yy);
@@ -195,13 +195,13 @@ namespace Kalman {
             SquareMatrix<T, State::RowsAtCompileTime> _S = llt.matrixL().toDenseMatrix();
             
             // Set left "block" (first column)
-            sigmaStatePoints.template leftCols<1>() = x;
+            sigmaStatePoints.template leftCols<1>() = x.get();
             // Set center block with x + gamma * S
             sigmaStatePoints.template block<State::RowsAtCompileTime, State::RowsAtCompileTime>(0,1)
-                    = ( this->gamma * _S).colwise() + x;
+                    = ( this->gamma * _S).colwise() + x.get();
             // Set right block with x - gamma * S
             sigmaStatePoints.template rightCols<State::RowsAtCompileTime>()
-                    = (-this->gamma * _S).colwise() + x;
+                    = (-this->gamma * _S).colwise() + x.get();
             
             return true;
         }
@@ -221,7 +221,7 @@ namespace Kalman {
                                                 const Covariance<Type>& noiseCov, Covariance<Type>& cov)
         {
             decltype(sigmaPoints) W = this->sigmaWeights_c.transpose().template replicate<Type::RowsAtCompileTime,1>();
-            decltype(sigmaPoints) tmp = (sigmaPoints.colwise() - mean);
+            decltype(sigmaPoints) tmp = (sigmaPoints.colwise() - mean.get());
             cov = tmp.cwiseProduct(W) * tmp.transpose() + noiseCov;
             
             return true;
@@ -247,8 +247,8 @@ namespace Kalman {
             // when Measurement::RowsAtCompileTime == 1 AND State::RowsAtCompileTime >= 8
             decltype(sigmaStatePoints) W = this->sigmaWeights_c.transpose().template replicate<State::RowsAtCompileTime,1>();
             Matrix<T, State::RowsAtCompileTime, Measurement::RowsAtCompileTime> P_xy
-                    = (sigmaStatePoints.colwise() - x).cwiseProduct( W ).eval()
-                    * (sigmaMeasurementPoints.colwise() - y).transpose();
+                    = (sigmaStatePoints.colwise() - x.get()).cwiseProduct( W ).eval()
+                    * (sigmaMeasurementPoints.colwise() - y.get()).transpose();
             
             K = P_xy * P_yy.inverse();
             return true;

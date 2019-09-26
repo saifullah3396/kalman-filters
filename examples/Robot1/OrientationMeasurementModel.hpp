@@ -14,7 +14,7 @@ namespace Robot1
  * @param T Numeric scalar type
  */
 template<typename T>
-class OrientationMeasurement : public Kalman::Vector<T, 1>
+class OrientationMeasurement
 {
 public:
     KALMAN_VECTOR(OrientationMeasurement, T, 1)
@@ -22,8 +22,8 @@ public:
     //! Orientation
     static constexpr size_t THETA = 0;
     
-    T theta()  const { return (*this)[ THETA ]; }
-    T& theta() { return (*this)[ THETA ]; }
+    DEFINE_CONST_GET(T, theta, THETA);
+    DEFINE_REF_GET(T, theta, THETA);
 };
 
 /**
