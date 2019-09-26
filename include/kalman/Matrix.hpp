@@ -44,7 +44,8 @@
         }; \
         NAME(void) {} \
         NAME(const Kalman::Vector<T, N>& internal) : internal_(internal) {} \
-        Kalman::Vector<T, N>& get() { return internal_; }
+        Kalman::Vector<T, N>& get() { return internal_; } \
+        Kalman::Vector<T, N> get() const { return internal_; }
 
 namespace Kalman {
     const int Dynamic = Eigen::Dynamic;
