@@ -14,7 +14,7 @@ namespace Robot1
  * @param T Numeric scalar type
  */
 template<typename T>
-class OrientationMeasurement : public Kalman::Vector<T, 1>
+class OrientationMeasurement
 {
 public:
     KALMAN_VECTOR(OrientationMeasurement, T, 1)

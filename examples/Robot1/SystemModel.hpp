@@ -17,7 +17,7 @@ namespace Robot1
  * @param T Numeric scalar type
  */
 template<typename T>
-class State : public Kalman::Vector<T, 3>
+class State
 {
 public:
     KALMAN_VECTOR(State, T, 3)
@@ -48,7 +48,7 @@ public:
  * @param T Numeric scalar type
  */
 template<typename T>
-class Control : public Kalman::Vector<T, 2>
+class Control
 {
 public:
     KALMAN_VECTOR(Control, T, 2)

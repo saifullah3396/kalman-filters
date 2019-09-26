@@ -140,7 +140,7 @@ namespace Kalman {
             
             // UPDATE STATE ESTIMATE AND COVARIANCE
             // Update state using computed kalman gain and innovation
-            x += K * ( z - m.h( x ) );
+            x.get() += K * ( z.get() - m.h( x ).get() );
             
             // Update covariance
             P -= K * m.H * P;

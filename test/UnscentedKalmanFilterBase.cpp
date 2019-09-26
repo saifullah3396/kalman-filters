@@ -7,6 +7,7 @@
 #include <kalman/UnscentedKalmanFilterBase.hpp>
 
 using namespace Kalman;
+using namespace Kalman::Test::Models;
 
 template<class StateType>
 class ConcreteUKF : public UnscentedKalmanFilterBase<StateType>
@@ -21,18 +22,18 @@ public:
 typedef float T;
 
 TEST(UnscentedKalmanFilterBase, init) {
-    auto ukf = ConcreteUKF<Vector<T, 3>>(1,2,1);
+    auto ukf = ConcreteUKF<DummyState<T, 3>>(1,2,1);
     
     // x should be zero
-    ASSERT_FLOAT_EQ(0, ukf.x[0]);
-    ASSERT_FLOAT_EQ(0, ukf.x[1]);
-    ASSERT_FLOAT_EQ(0, ukf.x[2]);
+    ASSERT_FLOAT_EQ(0, ukf.x.get()[0]);
+    ASSERT_FLOAT_EQ(0, ukf.x.get()[1]);
+    ASSERT_FLOAT_EQ(0, ukf.x.get()[2]);
 }
 
 TEST(UnscentedKalmanFilterBase, computeSigmaWeights) {
     T alpha = 1, beta = 2, kappa = 1;
     
-    auto ukf = ConcreteUKF<Vector<T, 3>>(alpha,beta,kappa);
+    auto ukf = ConcreteUKF<DummyState<T, 3>>(alpha,beta,kappa);
     ukf.computeWeights();
     
     ASSERT_FLOAT_EQ(2, ukf.gamma);
@@ -51,8 +52,8 @@ TEST(UnscentedKalmanFilterBase, computeSigmaWeights) {
 TEST(UnscentedKalmanFilterBase, computeSigmaPointTransition) {
     T alpha = 1, beta = 2, kappa = 1;
     
-    auto ukf = ConcreteUKF<Kalman::Test::Models::DummyState<T, 3>>(alpha,beta,kappa);
-    auto model = Kalman::Test::Models::QuadraticSystemModel<Kalman::Test::Models::DummyState<T, 3>>();
+    auto ukf = ConcreteUKF<DummyState<T, 3>>(alpha,beta,kappa);
+    auto model = Kalman::Test::Models::QuadraticSystemModel<DummyState<T, 3>>();
     
     // Init variables
     ukf.sigmaStatePoints <<
@@ -61,7 +62,7 @@ TEST(UnscentedKalmanFilterBase, computeSigmaPointTransition) {
         15, 16, 17, 18, 19, 20, 21;
     
     // Control vector
-    Kalman::Test::Models::DummyState<T, 3> u;
+    DummyState<T, 3> u;
     u.get() << 1, 2, 3;
     
     // Compute reference result
@@ -76,8 +77,8 @@ TEST(UnscentedKalmanFilterBase, computeSigmaPointTransition) {
 TEST(UnscentedKalmanFilterBase, computeSigmaPointMeasurements) {
     T alpha = 1, beta = 2, kappa = 1;
     
-    auto ukf = ConcreteUKF<Kalman::Test::Models::DummyState<T, 3>>(alpha,beta,kappa);
-    auto model = Kalman::Test::Models::QuadraticMeasurementModel<Kalman::Test::Models::DummyState<T, 3>, Kalman::Test::Models::DummyState<T, 2>>();
+    auto ukf = ConcreteUKF<DummyState<T, 3>>(alpha,beta,kappa);
+    auto model = Kalman::Test::Models::QuadraticMeasurementModel<DummyState<T, 3>, DummyState<T, 2>>();
     
     // Init variables
     ukf.sigmaStatePoints <<
@@ -89,7 +90,7 @@ TEST(UnscentedKalmanFilterBase, computeSigmaPointMeasurements) {
     Matrix<T,2,7> tmp = ukf.sigmaStatePoints.template topRows<2>();
     Matrix<T,2,7> ref = tmp.cwiseProduct(tmp).eval();
     
-    typename ConcreteUKF<Kalman::Test::Models::DummyState<T, 3>>::template SigmaPoints<Kalman::Test::Models::DummyState<T, 2>> points;
+    typename ConcreteUKF<DummyState<T, 3>>::template SigmaPoints<DummyState<T, 2>> points;
     
     ukf.computeSigmaPointMeasurements(model, points);
     
@@ -100,22 +101,22 @@ TEST(UnscentedKalmanFilterBase, computeSigmaPointMeasurements) {
 TEST(UnscentedKalmanFilterBase, computePredictionFromSigmaPoints) {
     T alpha = 1, beta = 2, kappa = 1;
     
-    auto ukf = ConcreteUKF<Vector<T, 3>>(alpha,beta,kappa);
+    auto ukf = ConcreteUKF<DummyState<T, 3>>(alpha,beta,kappa);
     
     // Init variables
     ukf.sigmaWeights_m << 7, 6, 5, 4, 3, 2, 1;
     
-    typename ConcreteUKF<Vector<T,3>>::SigmaPoints<Vector<T,4>> points;
+    typename ConcreteUKF<DummyState<T, 3>>::SigmaPoints<DummyState<T, 4>> points;
     points <<
          1,  2,  3,  4,  5,  6,  7,
          10,  20,  30,  40,  50,  60,  70,
          100,  200,  300,  400,  500,  600,  700,
          1000,  2000,  3000,  4000,  5000,  6000,  7000;
     
-    Vector<T,4> x = ukf.computePredictionFromSigmaPoints<Vector<T,4>>( points );
+    DummyState<T, 4> x = ukf.computePredictionFromSigmaPoints<DummyState<T, 4>>( points );
     
-    ASSERT_FLOAT_EQ(84,    x[0]);
-    ASSERT_FLOAT_EQ(840,   x[1]);
-    ASSERT_FLOAT_EQ(8400,  x[2]);
-    ASSERT_FLOAT_EQ(84000, x[3]);
+    ASSERT_FLOAT_EQ(84,    x.get()[0]);
+    ASSERT_FLOAT_EQ(840,   x.get()[1]);
+    ASSERT_FLOAT_EQ(8400,  x.get()[2]);
+    ASSERT_FLOAT_EQ(84000, x.get()[3]);
 }

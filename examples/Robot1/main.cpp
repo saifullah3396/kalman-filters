@@ -35,7 +35,7 @@ int main(int argc, char** argv)
 {
     // Simulated (true) system state
     State x;
-    x.setZero();
+    x.get().setZero();
     
     // Control input
     Control u;

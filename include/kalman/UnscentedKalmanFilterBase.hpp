@@ -109,7 +109,7 @@ namespace Kalman {
             computeWeights();
             
             // Setup state and covariance
-            x.setZero();
+            x.get().setZero();
         }
 
         /**
