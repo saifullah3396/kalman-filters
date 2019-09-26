@@ -91,7 +91,7 @@ public:
         
         // Robot position as (x,y)-vector
         // This uses the Eigen template method to get the first 2 elements of the vector
-        Kalman::Vector<T, 2> position = x.get().template head<2>();
+        Kalman::Vector<T, 2> position = x.get().head(2);
         
         // Distance of robot to landmark 1
         Kalman::Vector<T, 2> delta1 = position - landmark1;
@@ -135,7 +135,7 @@ protected:
         
         // Robot position as (x,y)-vector
         // This uses the Eigen template method to get the first 2 elements of the vector
-        Kalman::Vector<T, 2> position = x.get().template head<2>();
+        Kalman::Vector<T, 2> position = x.get().head(2);
         
         // Distance of robot to landmark 1
         Kalman::Vector<T, 2> delta1 = position - landmark1;
